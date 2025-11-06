@@ -13,8 +13,8 @@ public class ConfigOpenApi {
         return new OpenAPI()
                 .info(
                         new Info()
-                                .title("My Application API")
-                                .description("API documentation for My Application")
+                                .title("API Gradebook")
+                                .description("API from help implement a gradebook system")
                                 .version("v1")
                 );
     }
