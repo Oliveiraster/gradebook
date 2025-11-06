@@ -4,13 +4,13 @@ import com.example.gradebook.modules.gradebook.model.LancamentoNota;
 import com.example.gradebook.modules.student.model.Student;
 import com.example.gradebook.modules.student.StudentRepository;
 import com.example.gradebook.modules.subject.AvaliacaoRepository;
-import com.example.gradebook.modules.subject.dto.AvaliacaoResponseDTO;
 import com.example.gradebook.modules.subject.model.Avaliacao;
 import com.example.gradebook.modules.gradebook.dto.BoletimResponseDTO;
 import com.example.gradebook.modules.gradebook.dto.GradeRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Tag(name = "Boletim", description = "Operações relacionadas ao boletim dos alunos")
 @RestController
 @RequestMapping("grades")
 @RequiredArgsConstructor
@@ -93,31 +94,5 @@ public class GradeBookController {
     }
 
 
-    @RestController
-    @RequestMapping("avaliacoes")
-    @RequiredArgsConstructor
-    public class AvaliacaoController {
 
-        private final AvaliacaoRepository avaliacaoRepository;
-
-        @Operation(summary = "Lista avaliações por disciplina",
-                description = "Retorna todas as avaliações cadastradas de uma disciplina, com nome e peso.")
-        @ApiResponses(value = {
-                @ApiResponse(responseCode = "200", description = "Avaliações retornadas com sucesso"),
-                @ApiResponse(responseCode = "404", description = "Disciplina não encontrada")
-        })
-        @GetMapping("/disciplina/{disciplinaId}")
-        public List<AvaliacaoResponseDTO> listarPorDisciplina(@PathVariable Long disciplinaId) {
-            List<Avaliacao> avaliacoes = avaliacaoRepository.findByDisciplinaId(disciplinaId);
-
-            return avaliacoes.stream()
-                    .map(a -> AvaliacaoResponseDTO.builder()
-                            .id(a.getId())
-                            .title(a.getTitulo())    // ou getNome() dependendo do seu atributo
-                            .weight(a.getPeso())
-                            .build())
-                    .toList();
-        }
-
-    }
 }
