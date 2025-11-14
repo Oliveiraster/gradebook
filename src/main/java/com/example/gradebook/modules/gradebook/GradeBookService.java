@@ -1,6 +1,7 @@
 package com.example.gradebook.modules.gradebook;
 
 
+import com.example.gradebook.modules.gradebook.dto.BoletimResponseDTO;
 import com.example.gradebook.modules.gradebook.dto.GradeRequestDTO;
 import com.example.gradebook.modules.gradebook.model.LancamentoNota;
 import com.example.gradebook.modules.student.StudentRepository;
@@ -16,15 +17,48 @@ import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class GradebookService {
+public class GradeBookService {
     private final LancamentoNotaRepository lancamentoNotaRepository;
     private final StudentRepository studentRepository;
     private final AvaliacaoRepository avaliacaoRepository;
 
+    public List<BoletimResponseDTO>obterBoletim(Long turmaId, Long disciplinaId) {
+        List<Avaliacao> avaliacoes = avaliacaoRepository.findByDisciplinaId(disciplinaId);
+
+        Map<Long, Avaliacao> avaliacaoMap = avaliacoes.stream()
+                .collect(Collectors.toMap(Avaliacao::getId, a -> a));
+
+        List<Student> alunos = studentRepository.findByTurmaId(turmaId);
+
+        return alunos.stream().map(aluno -> {
+            List<LancamentoNota> notasAluno = lancamentoNotaRepository.findByAlunoId(aluno.getId());
+
+            Map<Long, BigDecimal> notasPorAvaliacao = notasAluno.stream()
+                    .filter(nota -> avaliacaoMap.containsKey(nota.getAvaliacao().getId()))
+                    .collect(Collectors.toMap(
+                            n -> n.getAvaliacao().getId(),
+                            LancamentoNota::getNota
+                    ));
+
+            BigDecimal media = this.calcularMediaPonderada(notasAluno.stream()
+                    .filter(n -> avaliacaoMap.containsKey(n.getAvaliacao().getId()))
+                    .collect(Collectors.toList()));
+
+            return BoletimResponseDTO.builder()
+                    .studentId(aluno.getId())
+                    .studentName(aluno.getNome())
+                    .grades(notasPorAvaliacao)
+                    .weightedAverage(media)
+                    .build();
+        }).collect(Collectors.toList());
+
+    }
 
     public BigDecimal calcularMediaPonderada(List<LancamentoNota> lancamentos) {
         if (lancamentos == null || lancamentos.isEmpty()) {

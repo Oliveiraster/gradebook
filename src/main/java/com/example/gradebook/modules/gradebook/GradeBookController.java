@@ -1,10 +1,5 @@
 package com.example.gradebook.modules.gradebook;
 
-import com.example.gradebook.modules.gradebook.model.LancamentoNota;
-import com.example.gradebook.modules.student.model.Student;
-import com.example.gradebook.modules.student.StudentRepository;
-import com.example.gradebook.modules.subject.AvaliacaoRepository;
-import com.example.gradebook.modules.subject.model.Avaliacao;
 import com.example.gradebook.modules.gradebook.dto.BoletimResponseDTO;
 import com.example.gradebook.modules.gradebook.dto.GradeRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,24 +11,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
 
 @Tag(name = "Boletim", description = "Operações relacionadas ao boletim dos alunos")
 @RestController
 @RequestMapping("grades")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 public class GradeBookController {
 
-    private final StudentRepository studentRepository;
-    private final AvaliacaoRepository avaliacaoRepository;
-    private final LancamentoNotaRepository lancamentoNotaRepository;
-    private final GradebookService gradebookService;
+    private final GradeBookService gradebookService;
 
     @Operation(summary = "Lista boletim por turma e disciplina",
             description = "Retorna os alunos da turma com suas notas e médias ponderadas para uma disciplina específica.")
@@ -46,33 +33,10 @@ public class GradeBookController {
             @PathVariable Long turmaId,
             @PathVariable Long disciplinaId) {
 
-        List<Avaliacao> avaliacoes = avaliacaoRepository.findByDisciplinaId(disciplinaId);
-        Map<Long, Avaliacao> avaliacaoMap = avaliacoes.stream()
-                .collect(Collectors.toMap(Avaliacao::getId, a -> a));
+    List<BoletimResponseDTO> boletim = gradebookService.obterBoletim(turmaId, disciplinaId);
+    return boletim;
 
-        List<Student> alunos = studentRepository.findByTurmaId(turmaId);
 
-        return alunos.stream().map(aluno -> {
-            List<LancamentoNota> notasAluno = lancamentoNotaRepository.findByAlunoId(aluno.getId());
-
-            Map<Long, BigDecimal> notasPorAvaliacao = notasAluno.stream()
-                    .filter(nota -> avaliacaoMap.containsKey(nota.getAvaliacao().getId()))
-                    .collect(Collectors.toMap(
-                            n -> n.getAvaliacao().getId(),
-                            LancamentoNota::getNota
-                    ));
-
-            BigDecimal media = gradebookService.calcularMediaPonderada(notasAluno.stream()
-                    .filter(n -> avaliacaoMap.containsKey(n.getAvaliacao().getId()))
-                    .collect(Collectors.toList()));
-
-            return BoletimResponseDTO.builder()
-                    .studentId(aluno.getId())
-                    .studentName(aluno.getNome())
-                    .grades(notasPorAvaliacao)
-                    .weightedAverage(media)
-                    .build();
-        }).collect(Collectors.toList());
     }
 
     @Operation(summary = "Salva notas lançadas",

@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AvaliacaoController {
 
-    private final AvaliacaoRepository avaliacaoRepository;
+    private final AvaliacaoService avaliacaoService;
 
     @Operation(summary = "Lista avaliações por disciplina",
             description = "Retorna todas as avaliações cadastradas de uma disciplina, com nome e peso.")
@@ -30,15 +30,8 @@ public class AvaliacaoController {
     })
     @GetMapping("/disciplina/{disciplinaId}")
     public List<AvaliacaoResponseDTO> listarPorDisciplina(@PathVariable Long disciplinaId) {
-        List<Avaliacao> avaliacoes = avaliacaoRepository.findByDisciplinaId(disciplinaId);
 
-        return avaliacoes.stream()
-                .map(a -> AvaliacaoResponseDTO.builder()
-                        .id(a.getId())
-                        .title(a.getTitulo())
-                        .weight(a.getPeso())
-                        .build())
-                .toList();
+        List<AvaliacaoResponseDTO> avaliacoes = avaliacaoService.findByDisciplinaId(disciplinaId);
+        return avaliacoes;
     }
-
 }

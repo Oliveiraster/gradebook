@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 @Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = {"aluno_id", "avaliacao_id"})
 })
-public class LancamentoNota {
+public class                                                                                                                                                                                                    LancamentoNota {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

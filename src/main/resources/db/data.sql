@@ -10,10 +10,10 @@ INSERT INTO disciplina (nome) VALUES ('Português');
 INSERT INTO disciplina (nome) VALUES ('História');
 INSERT INTO disciplina (nome) VALUES ('Ciências');
 
--- ALUNOS (3 por turma; 1 aluno por turma ficará sem notas)
+-- ALUNOS ( por turma; 1 aluno por turma ficará sem notas
 INSERT INTO aluno (nome, turma_id) VALUES ('Ana Souza', 1);    -- id = 1
 INSERT INTO aluno (nome, turma_id) VALUES ('Bruno Lima', 1);   -- id = 2
-INSERT INTO aluno (nome, turma_id) VALUES ('Carla Menezes', 1);-- id = 3 (sem notas)
+INSERT INTO aluno (nome, turma_id) VALUES ('Carla Menezes', 1); -- id = 3 (sem notas)
 
 INSERT INTO aluno (nome, turma_id) VALUES ('Diego Martins', 2);  -- id = 4
 INSERT INTO aluno (nome, turma_id) VALUES ('Eduarda Farias', 2); -- id = 5
@@ -32,7 +32,7 @@ INSERT INTO avaliacao (titulo, peso, disciplina_id) VALUES ('Prova', 5, 1); -- i
 -- Português (disciplina_id = 2) -> avaliacao ids 4,5,6
 INSERT INTO avaliacao (titulo, peso, disciplina_id) VALUES ('Prova', 5, 2);      -- id = 4
 INSERT INTO avaliacao (titulo, peso, disciplina_id) VALUES ('Trabalho', 2, 2);   -- id = 5
-INSERT INTO avaliacao (titulo, peso, disciplina_id) VALUES ('Atividade', 1, 2);        -- id = 6
+INSERT INTO avaliacao (titulo, peso, disciplina_id) VALUES ('Atividade', 1, 2);  -- id = 6
 
 -- História (disciplina_id = 3) -> avaliacao ids 7,8,9
 INSERT INTO avaliacao (titulo, peso, disciplina_id) VALUES ('Prova', 5, 3); -- id = 7
